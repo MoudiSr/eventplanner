@@ -23,7 +23,7 @@ const CustomerMain = ({ events }: {
     return (
         <>
             {events.length !== 0 ? events.map((event) => (
-                <div key={event.id} className="p-4 border rounded mb-4 cursor-pointer" onClick={() => window.location.href = `/customer/event/${event.id}`}>
+                <div key={event.id} className="p-4 border rounded mb-4 cursor-pointer">
                     <h2 className="text-lg font-semibold">{event.title}</h2>
                     <p className="text-sm text-gray-600">Description: {event.description}</p>
                     <p className="text-sm text-gray-600">Type: {event.type}</p>
