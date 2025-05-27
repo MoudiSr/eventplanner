@@ -12,14 +12,34 @@ export const getAllEventsByCustomer = async (customerId: string) => {
             reservations: {
                 include: {
                     customer: true,
-                    service: true,
                 },
             },
         },
     });
 
-    return events;
-}
+    // Flatten into Event[]
+    const flattenedEvents = events.flatMap(event =>
+        event.reservations.map(reservation => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            date: event.date.toISOString(),
+            type: event.type,
+            status: event.status,
+            customer: {
+                id: reservation.customer.id,
+                username: reservation.customer.username,
+            },
+            reservation: {
+                id: reservation.id,
+                status: reservation.status,
+            },
+        }))
+    );
+
+    return flattenedEvents;
+};
+
 
 export const createEvent = async (title: string, description: string, date: string, type: string, status: string, customerId: string) => {
     if (!title || !description || !date || !type || !status || !customerId) {
