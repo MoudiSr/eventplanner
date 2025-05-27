@@ -26,7 +26,8 @@ export default function Home() {
         ease: "power2.inOut"
       })
 
-    const sections = gsap.utils.toArray(".section");
+    const sections = gsap.utils.toArray<HTMLElement>(".section");
+
 
     sections.forEach((section, i) => {
       ScrollTrigger.create({
