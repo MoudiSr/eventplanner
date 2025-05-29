@@ -5,11 +5,13 @@ import { Input } from "../ui/input";
 import { createService } from "@/actions/services";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectLabel } from "@radix-ui/react-select";
+import { useSession } from "next-auth/react";
 
 const ProviderCreateService = () => {
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
     const [price, setPrice] = useState(0);
+    const { data: session } = useSession();
 
     const handleSubmit = async () => {
         if (!title || !type || price <= 0) {
@@ -17,7 +19,7 @@ const ProviderCreateService = () => {
             return;
         }
 
-        const service = await createService(title, type, price, "cmb52yf770000txl8q23jk2zm");
+        const service = await createService(title, type, price, String(session?.user.id));
         if ('error' in service) {
             alert(service.error);
         } else {
@@ -35,6 +37,7 @@ const ProviderCreateService = () => {
                 type="text"
                 placeholder="Service Title"
                 className="mb-4 w-full"
+                value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
             <Select onValueChange={setType} value={type}>
@@ -56,6 +59,7 @@ const ProviderCreateService = () => {
                 type="number"
                 placeholder="Service Price"
                 className="mb-4 w-full"
+                value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
             />
             <Button 

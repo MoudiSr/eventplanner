@@ -20,7 +20,6 @@ model User {
   role         Role     @default(CUSTOMER)
   createdAt    DateTime @default(now())
   services     Service[]
-  reservations Reservation[]
   events Event[]
 }
 
@@ -37,14 +36,11 @@ model Service {
 
 model Reservation {
   id         String   @id @default(cuid())
-  customer   User     @relation(fields: [customerId], references: [id])
-  customerId String
   service    Service  @relation(fields: [serviceId], references: [id])
   serviceId  String
   event      Event    @relation(fields: [eventId], references: [id])
   eventId    String
   status     String
-  eventDate  DateTime
   createdAt  DateTime @default(now())
 }
 
@@ -67,4 +63,5 @@ model Event {
 enum Role {
   CUSTOMER
   PROVIDER
+  ADMIN
 }

@@ -1,12 +1,13 @@
 'use client';
 import { createUserIfNotExists } from "@/actions/user";
 import { Role } from "@prisma/client";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const SignupPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
 
     const handleSubmit = async (role: Role) => {
         const response = await createUserIfNotExists(username, password, role);
@@ -14,12 +15,7 @@ const SignupPage = () => {
         if ('error' in response) {
             alert(response.error);
         } else {
-            localStorage.setItem("user", JSON.stringify(response));
-            if (response.role === "CUSTOMER") {
-                return redirect("/services")
-            } else {
-                return redirect("/provider")
-            }
+            router.push("/logIn");
         }
     }
 
@@ -35,7 +31,10 @@ const SignupPage = () => {
                         <label className="text-sm font-medium">Password</label>
                         <input onChange={e => setPassword(e.target.value)} type="password" className="p-2 border rounded" placeholder="Enter your password" required />
 
-                        <button onClick={() => handleSubmit("CUSTOMER")} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
+                        <button onClick={(e) => {
+                            e.preventDefault();
+                            handleSubmit("CUSTOMER")
+                        }} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
                     </form>
                 </div>
                 <div className="md:border-l-2 flex flex-col p-4 md:px-12">
@@ -47,7 +46,10 @@ const SignupPage = () => {
                         <label className="text-sm font-medium">Password</label>
                         <input onChange={e => setPassword(e.target.value)} type="password" className="p-2 border rounded" placeholder="Enter your password" required />
 
-                        <button onClick={() => handleSubmit("PROVIDER")} className="bg-gray-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
+                        <button onClick={(e) => {
+                            e.preventDefault();
+                            handleSubmit("PROVIDER")
+                        }} className="bg-gray-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
                     </form>
                 </div>
             </div>

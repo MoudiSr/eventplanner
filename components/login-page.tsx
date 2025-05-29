@@ -1,26 +1,37 @@
 'use client';
-import { loginUser } from "@/actions/user";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getSession, signIn } from "next-auth/react";
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = async () => {
-        const response = await loginUser(username, password);
+    const router = useRouter();
 
-        if ('error' in response) {
-            alert('Incorrect username/password combination !!');
+
+    const handleSubmit = async () => {
+        const response = await signIn("credentials", {
+            username,
+            password,
+            redirect: false,
+        });
+
+        if (response?.error) {
+            alert("Incorrect username/password combination !!");
         } else {
-            localStorage.setItem("user", JSON.stringify(response));
-            if (response.role === "CUSTOMER") {
-                return redirect("/services")
+            // Wait briefly for the session to update
+            const session = await getSession();
+
+            const role = session?.user?.role;
+
+            if (role === "PROVIDER") {
+                router.push("/provider");
             } else {
-                return redirect("/provider")
+                router.push("/services");
             }
         }
-    }
+    };
 
     return (
         <div className="flex justify-center min-h-screen p-12 bg-gray-50">

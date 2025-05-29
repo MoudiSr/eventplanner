@@ -6,21 +6,23 @@ import { createService } from "@/actions/services";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectLabel } from "@radix-ui/react-select";
 import { createEvent } from "@/actions/events";
+import { useSession } from "next-auth/react";
 
 const CustomerCreateEvent = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
     const [type, setType] = useState("");
-    const [status, setStatus] = useState("PENDING");
+
+    const { data: session } = useSession();
 
     const handleSubmit = async () => {
-        if (!title || !type || !description || !date || status === "") {
+        if (!title || !type || !description || !date) {
             alert("Please fill in all fields correctly.");
             return;
         }
 
-        const event = await createEvent(title, description, date, type, "PENDING", "cmb52yf770000txl8q23jk2zm");
+        const event = await createEvent(title, description, date, type, "PENDING", String(session?.user.id));
         if ('error' in event) {
             alert(event.error);
         } else {
@@ -29,17 +31,17 @@ const CustomerCreateEvent = () => {
             setType("");
             setDescription("");
             setDate("");
-            setStatus("");
         }
     }
 
     return (
         <div className="flex flex-col gap-8">
-            <h1>Create Service</h1>
+            <h1>Create Event</h1>
             <Input 
                 type="text"
                 placeholder="Service Title"
                 className="mb-4 w-full"
+                value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
             <Select onValueChange={setType} value={type}>
@@ -61,12 +63,14 @@ const CustomerCreateEvent = () => {
                 type="text"
                 placeholder="Service Description"
                 className="mb-4 w-full"
+                value={description}
                 onChange={(e) => setDescription(e.target.value)}
             />
             <Input
                 type="date"
                 placeholder="Service Date"
                 className="mb-4 w-full"
+                value={date}
                 onChange={(e) => setDate(e.target.value)}
             />
             <Button 
@@ -75,7 +79,7 @@ const CustomerCreateEvent = () => {
                     handleSubmit();
                 }}
             >
-                Create Service
+                Create Event
             </Button>
         </div>
     );
