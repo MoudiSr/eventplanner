@@ -6,13 +6,14 @@ import { redirect } from "next/navigation";
 export default async function EventDetailPage({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }) {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return redirect("/unauthorized");
 
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id: id },
         include: { customer: true },
     });
 
@@ -21,7 +22,7 @@ export default async function EventDetailPage({
     }
 
     const reservations = await prisma.reservation.findMany({
-        where: { eventId: params.id },
+        where: { eventId: id },
         include: { service: { include: { provider: true } } },
     });
 
