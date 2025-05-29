@@ -8,58 +8,164 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { useCart } from "./context/cart-context";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
-import { createEvent } from "@/actions/events";
+import { createEvent, getAllEventsByCustomer } from "@/actions/events";
 import { createReservation } from "@/actions/reservations";
+import { toast } from "sonner";
+import { Event } from "./customer/customer-main";
 
 const NavBar = () => {
     const { data: session } = useSession();
     const pathname = usePathname();
 
-    const { cart } = useCart();
+    const { cart, clearCart } = useCart();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
     const [type, setType] = useState("");
 
+    const [addNewEventOpen, setAddNewEventOpen] = useState(false);
+    const [addExistingEventOpen, setAddExistingEventOpen] = useState(false);
+
     const addNewEvent = async () => {
+        if (session?.user.role !== "CUSTOMER") {
+            toast.warning("You must be logged in as a customer to create an event.");
+            handleCloseAddNewEvent();
+            handleCloseSheet();
+            return;
+        }
+
+        if (cart.length === 0) {
+            toast.warning("Please add services to the cart before creating an event.");
+            handleCloseAddNewEvent();
+            handleCloseSheet();
+            return;
+        }
+
         if (!title || !type || !description || !date) {
-            alert("Please fill in all fields correctly.");
+            toast.warning("Please fill in all fields correctly.");
             return;
         }
 
         const event = await createEvent(title, description, date, type, "PENDING", String(session?.user.id));
+
         if (event.error) {
-            alert(event.error)
+            toast.warning("Error creating event.");
             return
         }
 
         const eventId = event.event?.id
-        
+
         if (!eventId) {
-            alert("Failed to get event ID.");
+            toast.warning("Failed to get event ID.");
             return;
         }
 
         if (event.event === undefined) {
+            toast.warning("Failed to get event ID.");
             return
         }
 
         try {
             await Promise.all(
-                cart.map(service => 
+                cart.map(service =>
                     createReservation(service, event.event, "PENDING")
                 )
             )
+            handleCloseAddNewEvent();
+            handleCloseSheet();
+            toast.success("Event and reservations created successfully!");
+
         } catch (error) {
-            console.error("Error creating reservations:", error);
-            alert("Failed to create reservations. Please try again.");
+            toast.warning("Failed to create reservations. Please try again.");
+            handleCloseAddNewEvent();
             return;
         }
     }
+
+    const addExistingEvent = async (event: Event) => {
+        if (session?.user.role !== "CUSTOMER") {
+            toast.warning("You must be logged in as a customer to add services to an existing event.");
+            handleCloseAddExistingEventOpen();
+            handleCloseSheet();
+            return;
+        }
+        if (cart.length === 0) {
+            toast.warning("Please add services to the cart before adding to an existing event.");
+            handleCloseAddExistingEventOpen();
+            handleCloseSheet();
+            return;
+        }
+
+        if (!event || !event.id) {
+            toast.warning("Please select an event.");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                cart.map(service =>
+                    createReservation(service, event, "PENDING")
+                )
+            );
+            handleCloseAddExistingEventOpen();
+            handleCloseSheet();
+            toast.success("Services added to the existing event successfully!");
+        } catch (error) {
+            toast.warning("Failed to add services to the existing event. Please try again.");
+            handleCloseAddExistingEventOpen();
+        }
+    }
+
+    const handleCloseAddNewEvent = () => {
+        setAddNewEventOpen(false);
+        setTitle("");
+        setDescription("");
+        setDate("");
+        setType("");
+    }
+
+    const handleCloseAddExistingEventOpen = () => {
+        setAddExistingEventOpen(false);
+        setTitle("");
+        setDescription("");
+        setDate("");
+        setType("");
+    }
+
+    const [sheetOpen, setSheetOpen] = useState(false);
+
+    const handleCloseSheet = () => {
+        setSheetOpen(false);
+        clearCart();
+    }
+
+    const [userEvents, setUserEvents] = useState<Event[]>([]);
+    const [loadingEvents, setLoadingEvents] = useState(false);
+
+    useEffect(() => {
+        const fetchUserEvents = async () => {
+            if (session?.user?.role !== "CUSTOMER" || !sheetOpen) return;
+
+            setLoadingEvents(true);
+            try {
+                const events = await getAllEventsByCustomer(session.user.id);
+                setUserEvents(events || []);
+            } catch (error) {
+                toast.error("Failed to fetch events. Please try again later.");
+                setUserEvents([]);
+            } finally {
+                setLoadingEvents(false);
+            }
+        };
+
+        fetchUserEvents();
+    }, [session, sheetOpen]);
+
+
 
     return (
         <header>
@@ -69,7 +175,7 @@ const NavBar = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     {pathname === "/services" && (
-                        <Sheet>
+                        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="outline">
                                     {"(" + cart.length + ")"}
@@ -92,13 +198,13 @@ const NavBar = () => {
                                 <div className="absolute bottom-0 w-full p-2">
                                     <span>Add services to event</span>
                                     <div className="flex w-full gap-2">
-                                        <Dialog>
+                                        <Dialog open={addNewEventOpen} onOpenChange={setAddNewEventOpen}>
                                             <DialogTrigger asChild>
                                                 <Button className="flex-1/2">New Event</Button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
-                                                    <DialogTitle>Add new event with these services</DialogTitle>
+                                                    <DialogTitle>Add new event with the selected services</DialogTitle>
                                                 </DialogHeader>
                                                 <div>
                                                     <Input
@@ -155,12 +261,32 @@ const NavBar = () => {
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
-                                                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                                                    <DialogDescription>
-                                                        This action cannot be undone. This will permanently delete your account
-                                                        and remove your data from our servers.
-                                                    </DialogDescription>
+                                                    <DialogTitle>Add services to an existing event</DialogTitle>
                                                 </DialogHeader>
+                                                <div className="flex flex-col gap-4 h-[50vh] overflow-y-auto">
+                                                    {loadingEvents ? (
+                                                        <p>Loading events...</p>
+                                                    ) : userEvents.length === 0 ? (
+                                                        <p>No events found.</p>
+                                                    ) : (
+                                                        userEvents.map(event => (
+                                                            <div key={event.id} className="bg-white p-4 rounded-lg shadow-md flex flex-col gap-1 mb-4">
+                                                                <span className="text-lg font-semibold">{event.title}</span>
+                                                                <span className="text-gray-600">Date: {new Date(event.date).toLocaleDateString()}</span>
+                                                                <span className="text-gray-600">Type: {event.type}</span>
+                                                                <Button
+                                                                    className="mt-2 bg-blue-500 text-white hover:bg-blue-600"
+                                                                    onClick={() => {
+                                                                        addExistingEvent(event);
+                                                                    }}
+                                                                >
+                                                                    Choose
+                                                                </Button>
+                                                            </div>
+                                                        ))
+                                                    )}
+
+                                                </div>
                                             </DialogContent>
                                         </Dialog>
                                     </div>

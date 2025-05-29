@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChildrenSession from "@/components/children-session";
 import { CartProvider } from '@/components/context/cart-context';
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,8 @@ export default function RootLayout({
       >
         <CartProvider>
           <ChildrenSession>
-            {children}
+            <main>{children}</main>
+            <Toaster />
           </ChildrenSession>
         </CartProvider>
       </body>

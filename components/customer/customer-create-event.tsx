@@ -17,6 +17,11 @@ const CustomerCreateEvent = () => {
     const { data: session } = useSession();
 
     const handleSubmit = async () => {
+        if (session?.user.role !== "CUSTOMER") {
+            alert("You must be logged in as a customer to create an event.");
+            return;
+        }
+
         if (!title || !type || !description || !date) {
             alert("Please fill in all fields correctly.");
             return;
@@ -37,7 +42,7 @@ const CustomerCreateEvent = () => {
     return (
         <div className="flex flex-col gap-8">
             <h1>Create Event</h1>
-            <Input 
+            <Input
                 type="text"
                 placeholder="Service Title"
                 className="mb-4 w-full"
@@ -59,7 +64,7 @@ const CustomerCreateEvent = () => {
                     </SelectGroup>
                 </SelectContent>
             </Select>
-            <Input 
+            <Input
                 type="text"
                 placeholder="Service Description"
                 className="mb-4 w-full"
@@ -73,7 +78,7 @@ const CustomerCreateEvent = () => {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
             />
-            <Button 
+            <Button
                 className="bg-blue-500 text-white hover:bg-blue-600"
                 onClick={() => {
                     handleSubmit();
