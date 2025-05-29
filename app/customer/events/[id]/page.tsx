@@ -3,19 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-type Props = {
+export default async function EventDetailPage({
+    params,
+}: {
     params: { id: string };
-};
-
-export default async function EventDetailPage({ params }: Props) {
+}) {
     const session = await getServerSession(authOptions);
     if (!session) return redirect("/unauthorized");
 
     const event = await prisma.event.findUnique({
         where: { id: params.id },
-        include: {
-            customer: true,
-        },
+        include: { customer: true },
     });
 
     if (!event || event.customer.id !== session.user.id) {
