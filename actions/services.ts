@@ -36,5 +36,6 @@ export const createService = async (title: string, type: string, price: number, 
     });
 
     revalidatePath("/provider");
+    revalidatePath("/services");
     return { service, message: "Successfully created service" };
 }
