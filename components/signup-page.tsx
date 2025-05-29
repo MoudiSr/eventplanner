@@ -35,7 +35,7 @@ const SignupPage = () => {
                             e.preventDefault();
                             handleSubmit("CUSTOMER")
                         }} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
-                    </form> 
+                    </form>
                 </div>
                 <div className="md:border-l-2 flex flex-col p-4 md:px-12">
                     <h1 className="text-xl">Service Provider Account</h1>
