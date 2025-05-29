@@ -1,8 +1,7 @@
 import { getAllEventsByCustomer } from "@/actions/events";
 import CustomerMain from "@/components/customer/customer-main";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-
+import { authOptions } from "@/lib/auth";
 
 const Page = async () => {
     const session = await getServerSession(authOptions);
