@@ -19,7 +19,7 @@ export default async function EventDetailPage({
 
     if (!event || event.customer.id !== session.user.id) {
         return redirect("/unauthorized");
-    }
+    } 
 
     const reservations = await prisma.reservation.findMany({
         where: { eventId: id },
