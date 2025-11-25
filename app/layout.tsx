@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] text-white`}
       >
         <CartProvider>
           <ChildrenSession>
