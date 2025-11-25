@@ -128,13 +128,13 @@ export default function Home() {
                 </p>
                 <div className="cta-group flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Link href="/services">
-                    <Button className="h-11 rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30 transition hover:shadow-emerald-300/40">
+                    <Button className="h-11 rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30 transition hover:shadow-emerald-300/40 hover:text-[#86f2d3]">
                       Explore services
                     </Button>
                   </Link>
                   <Button
                     variant="outline"
-                    className="h-11 rounded-full border-white/20 bg-white/5 px-6 text-white hover:border-white/30 hover:bg-white/10"
+                    className="h-11 rounded-full border-white/20 bg-white/5 px-6 text-white hover:border-white/30 hover:bg-white/10 hover:text-white transition"
                   >
                     Watch demo
                   </Button>
@@ -212,7 +212,7 @@ export default function Home() {
                 </p>
               </div>
               <Link href="/services">
-                <Button variant="outline" className="hidden border-white/20 text-white hover:border-white/30 hover:bg-white/10 sm:inline-flex">
+                <Button variant="outline" className="hidden border-white/20 text-black hover:border-white/30 hover:bg-white/10 hover:text-white sm:inline-flex">
                   View all
                 </Button>
               </Link>
@@ -281,10 +281,10 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button className="rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30">
+                <Button className="rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30 hover:text-[#86f2d3]">
                   Request a consult
                 </Button>
-                <Button variant="outline" className="rounded-full border-white/20 text-white hover:border-white/30 hover:bg-white/10">
+                <Button variant="outline" className="rounded-full border-white/20 text-black hover:border-white/30 hover:bg-white/10 hover:text-white">
                   Download brochure
                 </Button>
               </div>

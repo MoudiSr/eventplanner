@@ -177,14 +177,14 @@ const NavBar = () => {
         <Button
             variant="ghost"
             onClick={() => signOut()}
-            className="border border-white/15 text-white hover:border-white/40 hover:bg-white/10"
+            className="border border-white/15 text-white hover:border-white/40 hover:bg-white/10 hover:text-white"
         >
             Log out
         </Button>
     ) : (
         <div className="hidden items-center gap-2 sm:flex">
             <Link href="/logIn">
-                <Button variant="ghost" className="border border-white/15 text-white hover:border-white/40 hover:bg-white/10">
+                <Button variant="ghost" className="border border-white/15 text-white hover:border-white/40 hover:bg-white/10 hover:text-white">
                     Sign in
                 </Button>
             </Link>
@@ -228,14 +228,14 @@ const NavBar = () => {
                                             <ShoppingBag className="size-5" />
                                         </Button>
                                     </SheetTrigger>
-                                    <SheetContent className="flex w-full flex-col gap-4 bg-slate-950 text-white sm:max-w-lg">
+                                    <SheetContent className="flex w-full flex-col gap-4 bg-slate-950 border-0 text-white sm:max-w-lg">
                                         <SheetHeader>
-                                            <SheetTitle className="flex items-center justify-between">
-                                                <span>Selected Services</span>
+                                            <SheetTitle className="flex items-center gap-3">
+                                                <span className="text-white">Selected Services</span>
                                                 <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70">{cart.length}</span>
                                             </SheetTitle>
                                         </SheetHeader>
-                                        <div className="flex-1 space-y-3 overflow-y-auto pr-2">
+                                        <div className="flex-1 space-y-3 overflow-y-auto px-2">
                                             {cart.map(service => (
                                                 <div key={service.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-sm">
                                                     <div className="flex items-center justify-between">
@@ -253,7 +253,7 @@ const NavBar = () => {
                                                     <DialogTrigger asChild>
                                                         <Button className="w-full bg-[#86f2d3] text-black hover:bg-[#7ae8c8]">New Event</Button>
                                                     </DialogTrigger>
-                                                    <DialogContent className="bg-slate-950 text-white">
+                                                    <DialogContent className="bg-slate-950 text-white border-0">
                                                         <DialogHeader>
                                                             <DialogTitle>Add new event with the selected services</DialogTitle>
                                                             <DialogDescription className="text-white/70">Provide event details to create your booking.</DialogDescription>

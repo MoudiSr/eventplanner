@@ -88,10 +88,10 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
                                 </p>
                             </div>
                             <div className="flex flex-wrap gap-3">
-                                <Button className="h-11 rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30 transition hover:shadow-emerald-300/40" asChild>
+                                <Button className="h-11 rounded-full bg-[#86f2d3] px-6 text-black shadow-lg shadow-emerald-400/30 transition hover:shadow-emerald-300/40 hover:text-[#86f2d3]" asChild>
                                     <a href="#services-grid">Browse services</a>
                                 </Button>
-                                <Button variant="outline" className="h-11 rounded-full border-white/20 bg-white/5 px-6 text-white hover:border-white/30 hover:bg-white/10">
+                                <Button variant="outline" className="h-11 rounded-full border-white/20 bg-white/5 px-6 text-white hover:border-white/30 hover:bg-white/10 hover:text-white">
                                     Talk with a planner
                                 </Button>
                             </div>
@@ -161,7 +161,7 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
                                     <div className="flex items-center justify-between">
                                         <p className="text-2xl font-semibold text-white">${service.price.toFixed(2)}</p>
                                         <Button
-                                            className="rounded-full bg-[#86f2d3] px-4 text-black shadow-md shadow-emerald-400/30 transition group-hover:shadow-emerald-300/40"
+                                            className="rounded-full bg-[#86f2d3] px-4 text-black shadow-md shadow-emerald-400/30 transition group-hover:shadow-emerald-300/40 hover:text-[#86f2d3]"
                                             onClick={() => addToCart(service)}
                                         >
                                             Add to plan
