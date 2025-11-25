@@ -1,4 +1,3 @@
-import type { PageProps } from "next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -6,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export default async function EventDetailPage({
     params,
-}: PageProps<{ id: string }>) {
+}: Promise<{ id: string }>) {
     const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return redirect("/unauthorized");
