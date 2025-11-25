@@ -45,7 +45,6 @@ export default function Home() {
       const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       intro
-        .from(".nav-bar", { y: -24, opacity: 0, duration: 0.8 })
         .from(
           ".hero-badge",
           { y: 16, opacity: 0, duration: 0.6 },
@@ -111,42 +110,7 @@ export default function Home() {
       ref={pageRef}
       className="min-h-screen bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] text-white"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-20 pt-8 md:pt-12">
-        <header className="nav-bar sticky top-4 z-20 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-          <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-            <div className="flex items-center gap-2 text-lg font-semibold">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#86f2d3] via-[#7aa2ff] to-[#b46bff] text-black shadow-lg shadow-indigo-500/30">
-                EP
-              </span>
-              <span className="hidden text-sm uppercase tracking-[0.16em] text-white/70 sm:block">
-                Event Planner
-              </span>
-            </div>
-            <nav className="hidden items-center gap-6 text-sm text-white/80 md:flex">
-              <Link href="#services" className="transition hover:text-white">
-                Services
-              </Link>
-              <Link href="#stories" className="transition hover:text-white">
-                Stories
-              </Link>
-              <Link href="#workflow" className="transition hover:text-white">
-                Workflow
-              </Link>
-              <Link href="#contact" className="transition hover:text-white">
-                Contact
-              </Link>
-            </nav>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" className="hidden border border-white/15 text-white hover:border-white/30 hover:bg-white/10 sm:inline-flex">
-                Sign in
-              </Button>
-              <Button className="bg-gradient-to-r from-[#7aa2ff] via-[#86f2d3] to-[#b46bff] text-black shadow-lg shadow-indigo-500/30 transition hover:shadow-indigo-400/40">
-                Book a planner
-              </Button>
-            </div>
-          </div>
-        </header>
-
+      <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-20 pt-24 md:pt-28">
         <main className="flex flex-col gap-16">
           <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-indigo-900/30 backdrop-blur-xl md:p-12">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(134,242,211,0.18),transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(122,162,255,0.15),transparent_40%)]" />
