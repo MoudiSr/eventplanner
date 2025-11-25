@@ -223,7 +223,7 @@ const NavBar = () => {
                             {pathname === "/services" && (
                                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="border-white/20 text-white hover:border-white/40 hover:bg-white/10">
+                                        <Button className=" text-white border-white/40 bg-white/10 hover:bg-white/15">
                                             <span className="mr-2 rounded-full bg-white/10 px-2 py-1 text-xs text-white/80">{cart.length}</span>
                                             <ShoppingBag className="size-5" />
                                         </Button>
