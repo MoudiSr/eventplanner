@@ -1,8 +1,9 @@
 "use client";
+import gsap from "gsap";
 import { createUserIfNotExists } from "@/actions/user";
 import { Role } from "@prisma/client";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
@@ -11,6 +12,37 @@ const SignupPage = () => {
     const [role, setRole] = useState<Role>("CUSTOMER");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+    const pageRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+            intro
+                .from(".signup-badge", { y: 14, opacity: 0, duration: 0.6 })
+                .from(".signup-title", { y: 24, opacity: 0, duration: 0.85 }, "-=0.25")
+                .from(".signup-subtitle", { y: 16, opacity: 0, duration: 0.65 }, "-=0.35");
+
+            gsap.from(".signup-highlight", {
+                opacity: 0,
+                y: 28,
+                duration: 0.8,
+                ease: "power2.out",
+                stagger: 0.12,
+                delay: 0.1,
+            });
+
+            gsap.from(".signup-form", {
+                opacity: 0,
+                y: 22,
+                duration: 0.75,
+                ease: "power3.out",
+                delay: 0.2,
+            });
+        }, pageRef);
+
+        return () => ctx.revert();
+    }, []);
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -27,7 +59,7 @@ const SignupPage = () => {
     }
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] px-4 py-16 text-white">
+        <div ref={pageRef} className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] px-4 py-16 text-white">
             <div className="absolute inset-0 -z-10 overflow-hidden">
                 <div className="absolute left-2 top-8 h-72 w-72 rounded-full bg-[#7aa2ff]/20 blur-[110px]" />
                 <div className="absolute right-0 bottom-10 h-80 w-80 rounded-full bg-[#86f2d3]/22 blur-[130px]" />
@@ -40,14 +72,14 @@ const SignupPage = () => {
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(134,242,211,0.18),transparent_38%),radial-gradient(circle_at_75%_80%,rgba(122,162,255,0.18),transparent_42%)]" />
                         <div className="relative flex h-full flex-col gap-8">
                             <div className="space-y-4">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-white/70">
+                                <div className="signup-badge inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-white/70">
                                     <span className="h-2 w-2 rounded-full bg-[#86f2d3]" />
                                     Join EventPlanner
                                 </div>
-                                <h1 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
+                                <h1 className="signup-title text-4xl font-semibold leading-tight text-white md:text-5xl">
                                     Create your account to craft <span className="text-[#86f2d3]">modern events</span>
                                 </h1>
-                                <p className="text-base text-white/70">
+                                <p className="signup-subtitle text-base text-white/70">
                                     Choose whether you want to book experiences or showcase your services. You can always create another profile later.
                                 </p>
                             </div>
@@ -61,7 +93,7 @@ const SignupPage = () => {
                                 ].map((item) => (
                                     <div
                                         key={item.label}
-                                        className={`rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80 ${item.roleCheck ? "ring-2 ring-[#86f2d3]/80 shadow-[0_10px_40px_-25px_rgba(134,242,211,0.8)]" : ""}`}
+                                        className={`signup-highlight rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80 ${item.roleCheck ? "ring-2 ring-[#86f2d3]/80 shadow-[0_10px_40px_-25px_rgba(134,242,211,0.8)]" : ""}`}
                                     >
                                         <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-[#86f2d3]">✓</div>
                                         <p>{item.label}</p>
@@ -72,7 +104,7 @@ const SignupPage = () => {
                     </div>
 
                     <div className="border-t border-white/10 bg-black/40 p-8 shadow-inner md:border-l md:border-t-0 md:p-10">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="signup-form space-y-6">
                             <div className="flex items-center justify-between gap-4">
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Create account</p>
