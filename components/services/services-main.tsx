@@ -1,5 +1,7 @@
 'use client';
-import { useMemo } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useCart } from "../context/cart-context";
 import { Service } from "../provider/provider-main";
@@ -12,6 +14,7 @@ type CategorizedServices = {
 
 const ServicesMain = ({ services }: { services: Service[] }) => {
     const { addToCart } = useCart();
+    const pageRef = useRef<HTMLDivElement>(null);
 
     const categorized = useMemo(() => {
         return services.reduce((acc, service) => {
@@ -26,8 +29,45 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
         return uniqueProviders.size;
     }, [services]);
 
+    useEffect(() => {
+        gsap.registerPlugin(ScrollTrigger);
+        const ctx = gsap.context(() => {
+            const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+            intro
+                .from(".services-badge", { y: 14, opacity: 0, duration: 0.6 })
+                .from(".services-title", { y: 26, opacity: 0, duration: 0.8 }, "-=0.2")
+                .from(".services-subtitle", { y: 18, opacity: 0, duration: 0.7 }, "-=0.3");
+
+            gsap.from(".services-stat", {
+                y: 24,
+                opacity: 0,
+                duration: 0.7,
+                ease: "power2.out",
+                stagger: 0.1,
+                delay: 0.1,
+            });
+
+            gsap.utils.toArray<HTMLElement>(".service-card").forEach((card) => {
+                gsap.from(card, {
+                    opacity: 0,
+                    y: 30,
+                    duration: 0.75,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse",
+                    },
+                });
+            });
+        }, pageRef);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] text-white">
+        <div ref={pageRef} className="min-h-screen bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] text-white">
             <div className="relative mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-16 pt-20">
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(134,242,211,0.16),transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(122,162,255,0.14),transparent_45%)]" />
 
@@ -35,15 +75,15 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
                     <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_rgba(180,107,255,0.18),transparent_45%),radial-gradient(circle_at_bottom_left,_rgba(134,242,211,0.18),transparent_40%)]" />
                     <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
                         <div className="max-w-2xl space-y-6">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70">
+                            <div className="services-badge inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70">
                                 <span className="h-2 w-2 rounded-full bg-[#86f2d3]" />
                                 Services crafted for every milestone
                             </div>
                             <div className="space-y-4">
-                                <h1 className="text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+                                <h1 className="services-title text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
                                     Curated support for <span className="text-[#86f2d3]">seamless celebrations</span>
                                 </h1>
-                                <p className="text-lg text-white/70">
+                                <p className="services-subtitle text-lg text-white/70">
                                     Explore vetted partners, transparent pricing, and concierge guidance that mirrors the elevated experience from our home page.
                                 </p>
                             </div>
@@ -70,7 +110,7 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
                                 value: Object.keys(categorized).length,
                                 hint: "From decor to logistics",
                             }].map((stat) => (
-                                <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-indigo-900/30">
+                                <div key={stat.label} className="services-stat rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-indigo-900/30">
                                     <p className="text-xs uppercase tracking-[0.16em] text-white/60">{stat.label}</p>
                                     <p className="mt-2 text-3xl font-semibold text-white">{stat.value || 0}</p>
                                     <p className="text-sm text-white/60">{stat.hint}</p>
@@ -104,7 +144,7 @@ const ServicesMain = ({ services }: { services: Service[] }) => {
                         {services.map((service) => (
                             <article
                                 key={service.id}
-                                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-indigo-900/25 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+                                className="service-card group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-indigo-900/25 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
                             >
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(134,242,211,0.12),transparent_40%)] opacity-0 transition group-hover:opacity-100" />
                                 <div className="relative flex flex-col gap-4">

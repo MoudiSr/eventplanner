@@ -1,5 +1,6 @@
 "use client";
-import { FormEvent, useState } from "react";
+import gsap from "gsap";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,6 +11,37 @@ const LoginPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const router = useRouter();
+    const pageRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+            intro
+                .from(".login-badge", { y: 14, opacity: 0, duration: 0.6 })
+                .from(".login-title", { y: 24, opacity: 0, duration: 0.8 }, "-=0.25")
+                .from(".login-subtitle", { y: 16, opacity: 0, duration: 0.6 }, "-=0.35");
+
+            gsap.from(".login-feature", {
+                opacity: 0,
+                y: 30,
+                duration: 0.7,
+                ease: "power2.out",
+                stagger: 0.1,
+                delay: 0.1,
+            });
+
+            gsap.from(".login-form", {
+                opacity: 0,
+                y: 24,
+                duration: 0.8,
+                ease: "power3.out",
+                delay: 0.15,
+            });
+        }, pageRef);
+
+        return () => ctx.revert();
+    }, []);
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -38,7 +70,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] px-4 py-16 text-white">
+        <div ref={pageRef} className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#05060a] via-[#0b1220] to-[#0a1a2f] px-4 py-16 text-white">
             <div className="absolute inset-0 -z-10 overflow-hidden">
                 <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#7aa2ff]/20 blur-[100px]" />
                 <div className="absolute right-0 bottom-10 h-64 w-64 rounded-full bg-[#86f2d3]/25 blur-[120px]" />
@@ -51,20 +83,20 @@ const LoginPage = () => {
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(134,242,211,0.16),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(122,162,255,0.18),transparent_45%)]" />
                         <div className="relative flex h-full flex-col justify-between gap-8">
                             <div className="space-y-4">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-white/70">
+                                <div className="login-badge inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-white/70">
                                     <span className="h-2 w-2 rounded-full bg-[#86f2d3]" />
                                     Welcome back
                                 </div>
-                                <h1 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
+                                <h1 className="login-title text-4xl font-semibold leading-tight text-white md:text-5xl">
                                     Log in to keep your <span className="text-[#86f2d3]">celebrations</span> moving
                                 </h1>
-                                <p className="text-base text-white/70">
+                                <p className="login-subtitle text-base text-white/70">
                                     Access proposals, track milestones, and coordinate with providers inside your EventPlanner hub.
                                 </p>
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {["Secure access with magic links", "Real-time provider updates", "Save favorite venues", "Collaborate with guests"].map((item) => (
-                                    <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
+                                    <div key={item} className="login-feature rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
                                         <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-[#86f2d3]">✓</div>
                                         <p>{item}</p>
                                     </div>
@@ -80,7 +112,7 @@ const LoginPage = () => {
                             <p className="text-sm text-white/60">We’ll personalize your dashboard based on your role.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="login-form space-y-5">
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-white/80" htmlFor="username">Username</label>
                                 <input
