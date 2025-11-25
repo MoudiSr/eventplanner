@@ -80,12 +80,7 @@ const Page = async () => {
                                     📍
                                     <span>Event type: {reservation.event.type}</span>
                                 </span>
-                                <Link
-                                    href="/provider/manageService"
-                                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-indigo-800/40 transition hover:-translate-y-0.5"
-                                >
-                                    Manage service
-                                </Link>
+                                
                             </div>
                         </div>
                     ))}
