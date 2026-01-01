@@ -24,7 +24,8 @@ export const authOptions = {
                 const isValid = credentials.password === user.password;
                 if (!isValid) return null;
 
-                return user;
+                const { password, ...safeUser } = user;
+                return safeUser;
             },
         }),
     ],
@@ -41,12 +42,14 @@ export const authOptions = {
             }
             return token;
         },
-        async session({ session, token } : { session: any, token: any }) {
-            if (token?.sub) {
-                session.user.id = token.sub;
-            }
-            if (token?.role) {
-                session.user.role = token.role;
+        async session({ session, token }: { session: any, token: any }) {
+            if (session?.user) {
+                if (token?.sub) {
+                    session.user.id = token.sub;
+                }
+                if (token?.role) {
+                    session.user.role = token.role;
+                }
             }
             return session;
         },
