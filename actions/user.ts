@@ -26,7 +26,6 @@ export const createUserIfNotExists = async (
                     username,
                     role,
                 },
-            },
             });
         } catch (error) {
             return { error: "Unable to create user" };
