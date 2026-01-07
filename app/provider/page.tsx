@@ -1,10 +1,17 @@
 import { getAllServicesByProvider } from "@/actions/services";
 import ProviderMain from "@/components/provider/provider-main";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const Page = async () => {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+        headers: headers(),
+    });
+
+    if (!session?.user?.id) {
+        return null;
+    }
+
     const services = await getAllServicesByProvider(session.user.id);
 
     return (

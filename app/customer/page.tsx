@@ -1,12 +1,18 @@
 import { getAllEventsByCustomer } from "@/actions/events";
 import CustomerMain from "@/components/customer/customer-main";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const Page = async () => {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+        headers: headers(),
+    });
+
+    if (!session?.user?.id) {
+        return null;
+    }
+
     const events = await getAllEventsByCustomer(session.user.id);
-    console.log(events)
 
     return (
         <>

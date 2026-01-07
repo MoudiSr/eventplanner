@@ -3,7 +3,7 @@ import { AlignJustify, ShoppingBag } from "lucide-react";
 import NavBarLinks from "./navbar-links";
 import { Button } from "./ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
-import { signOut, useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { useCart } from "./context/cart-context";
@@ -18,7 +18,7 @@ import { Event } from "./customer/customer-main";
 import Link from "next/link";
 
 const NavBar = () => {
-    const { data: session } = useSession();
+    const { data: session } = authClient.useSession();
     const pathname = usePathname();
 
     const { cart, clearCart } = useCart();
@@ -30,9 +30,12 @@ const NavBar = () => {
 
     const [addNewEventOpen, setAddNewEventOpen] = useState(false);
     const [addExistingEventOpen, setAddExistingEventOpen] = useState(false);
+    const handleSignOut = async () => {
+        await authClient.signOut();
+    };
 
     const addNewEvent = async () => {
-        if (session?.user.role !== "CUSTOMER") {
+        if (session?.user?.role !== "CUSTOMER") {
             toast.warning("You must be logged in as a customer to create an event.");
             handleCloseAddNewEvent();
             handleCloseSheet();
@@ -51,7 +54,7 @@ const NavBar = () => {
             return;
         }
 
-        const event = await createEvent(title, description, date, type, "PENDING", String(session?.user.id));
+        const event = await createEvent(title, description, date, type, "PENDING", String(session?.user?.id));
 
         if (event.error) {
             toast.warning("Error creating event.");
@@ -88,7 +91,7 @@ const NavBar = () => {
     };
 
     const addExistingEvent = async (event: Event) => {
-        if (session?.user.role !== "CUSTOMER") {
+        if (session?.user?.role !== "CUSTOMER") {
             toast.warning("You must be logged in as a customer to add services to an existing event.");
             handleCloseAddExistingEventOpen();
             handleCloseSheet();
@@ -149,7 +152,7 @@ const NavBar = () => {
 
     useEffect(() => {
         const fetchUserEvents = async () => {
-            if (session?.user?.role !== "CUSTOMER" || !sheetOpen) return;
+            if (session?.user?.role !== "CUSTOMER" || !session?.user?.id || !sheetOpen) return;
 
             setLoadingEvents(true);
             try {
@@ -169,14 +172,14 @@ const NavBar = () => {
     const navLinks = useMemo(() => [
         { href: "/", label: "Home" },
         { href: "/services", label: "Services" },
-        session?.user.role === "CUSTOMER" ? { href: "/customer", label: "Profile" } : null,
-        session?.user.role === "PROVIDER" ? { href: "/provider", label: "Profile" } : null,
+        session?.user?.role === "CUSTOMER" ? { href: "/customer", label: "Profile" } : null,
+        session?.user?.role === "PROVIDER" ? { href: "/provider", label: "Profile" } : null,
     ].filter(Boolean) as { href: string; label: string; }[], [session]);
 
     const primaryAction = session ? (
         <Button
             variant="ghost"
-            onClick={() => signOut()}
+            onClick={handleSignOut}
             className="border border-white/15 text-white hover:border-white/40 hover:bg-white/10 hover:text-white"
         >
             Log out
@@ -370,7 +373,7 @@ const NavBar = () => {
                                     </div>
                                     <DrawerFooter>
                                         {session ? (
-                                            <Button onClick={() => signOut()} className="w-full bg-red-500 text-white hover:bg-red-600">Log Out</Button>
+                                            <Button onClick={handleSignOut} className="w-full bg-red-500 text-white hover:bg-red-600">Log Out</Button>
                                         ) : (
                                             <div className="flex flex-col gap-2">
                                                 <Link href="/logIn">

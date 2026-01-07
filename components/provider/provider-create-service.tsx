@@ -6,13 +6,13 @@ import { Input } from "../ui/input";
 import { createService } from "@/actions/services";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectLabel } from "@radix-ui/react-select";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 
 const ProviderCreateService = () => {
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
     const [price, setPrice] = useState(0);
-    const { data: session } = useSession();
+    const { data: session } = authClient.useSession();
     const pageRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ const ProviderCreateService = () => {
             return;
         }
 
-        const service = await createService(title, type, price, String(session?.user.id));
+        const service = await createService(title, type, price, String(session?.user?.id));
         if ('error' in service) {
             alert(service.error);
         } else {
