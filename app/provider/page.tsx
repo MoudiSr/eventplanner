@@ -4,8 +4,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 const Page = async () => {
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-        headers: headers(),
+        headers: requestHeaders,
     });
 
     if (!session?.user?.id) {

@@ -4,8 +4,9 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 const Page = async () => {
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-        headers: headers(),
+        headers: requestHeaders,
     });
     if (!session?.user?.id) {
         return (

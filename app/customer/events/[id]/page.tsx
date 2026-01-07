@@ -10,8 +10,9 @@ export default async function EventDetailPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-        headers: headers(),
+        headers: requestHeaders,
     });
     if (!session) return redirect("/unauthorized");
 
