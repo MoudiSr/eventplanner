@@ -14,7 +14,7 @@ export const createReservation = async (service: Service, event: Event, status: 
             },
         });
 
-        revalidatePath('/customer/');
+        revalidatePath('/customer');
         return { message: "Reservation created successfully.", reservation };
     } catch (error) {
         console.error("Error creating reservation:", error);
