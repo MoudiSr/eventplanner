@@ -41,3 +41,38 @@ export const getCurrentProviderCustomerReservations = async (providerId: string)
 
     return reservations;
 }
+
+export const updateReservationStatus = async (
+    reservationId: string,
+    providerId: string,
+    status: string,
+) => {
+    const reservation = await prisma.reservation.findUnique({
+        where: {
+            id: reservationId,
+        },
+        include: {
+            service: true,
+        },
+    });
+
+    if (!reservation) {
+        return { error: "Reservation not found." };
+    }
+
+    if (reservation.service.providerId !== providerId) {
+        return { error: "You are not authorized to update this reservation." };
+    }
+
+    const updatedReservation = await prisma.reservation.update({
+        where: {
+            id: reservationId,
+        },
+        data: {
+            status,
+        },
+    });
+
+    revalidatePath("/provider/customerReservations");
+    return { reservation: updatedReservation, message: "Reservation updated successfully." };
+}
