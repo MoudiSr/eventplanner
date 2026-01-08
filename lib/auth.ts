@@ -1,28 +1,58 @@
-import { prisma } from "@/lib/prisma";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
-import { username } from "better-auth/plugins";
+import { SessionStrategy } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/prisma"; // your Prisma client
 
-export const auth = betterAuth({
-    database: prismaAdapter(prisma),
-    emailAndPassword: {
-        enabled: true,
-        autoSignIn: false,
+export const authOptions = {
+    adapter: PrismaAdapter(prisma),
+    providers: [
+        CredentialsProvider({
+            name: "credentials",
+            credentials: {
+                username: { label: "Username", type: "text" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+                if (!credentials?.username || !credentials?.password) return null;
+
+                const user = await prisma.user.findUnique({
+                    where: { username: credentials.username },
+                });
+
+                if (!user || !user.password) return null;
+
+                const isValid = credentials.password === user.password;
+                if (!isValid) return null;
+
+                const { password, ...safeUser } = user;
+                return safeUser;
+            },
+        }),
+    ],
+    pages: {
+        signIn: "/logIn",
     },
-    plugins: [nextCookies(), username()],
-    user: {
-        additionalFields: {
-            role: {
-                type: "string",
-                required: true,
-                defaultValue: "CUSTOMER",
-            },
-            username: {
-                type: "string",
-                required: true,
-                unique: true,
-            },
+    session: {
+        strategy: "jwt" as SessionStrategy,
+    },
+    callbacks: {
+        async jwt({ token, user }: { token: any, user: any }) {
+            if (user) {
+                token.role = user.role;
+            }
+            return token;
+        },
+        async session({ session, token }: { session: any, token: any }) {
+            if (session?.user) {
+                if (token?.sub) {
+                    session.user.id = token.sub;
+                }
+                if (token?.role) {
+                    session.user.role = token.role;
+                }
+            }
+            return session;
         },
     },
-});
+    secret: process.env.NEXTAUTH_SECRET,
+};

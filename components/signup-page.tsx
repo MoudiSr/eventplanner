@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState<Role>("CUSTOMER");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +48,7 @@ const SignupPage = () => {
         event.preventDefault();
         setIsSubmitting(true);
 
-        const response = await createUserIfNotExists(username, email, password, role);
+        const response = await createUserIfNotExists(username, password, role);
 
         if ('error' in response) {
             alert(response.error);
@@ -140,18 +139,6 @@ const SignupPage = () => {
                                     type="text"
                                     className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/50 shadow-sm transition focus:border-[#86f2d3] focus:outline-none focus:ring-2 focus:ring-[#86f2d3]/30"
                                     placeholder="Enter your username"
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-white/80" htmlFor="email">Email</label>
-                                <input
-                                    id="email"
-                                    onChange={e => setEmail(e.target.value)}
-                                    type="email"
-                                    className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/50 shadow-sm transition focus:border-[#86f2d3] focus:outline-none focus:ring-2 focus:ring-[#86f2d3]/30"
-                                    placeholder="Enter your email"
                                     required
                                 />
                             </div>

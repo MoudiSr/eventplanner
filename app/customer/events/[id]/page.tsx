@@ -1,7 +1,7 @@
 import EventDetail from "@/components/customer/event-detail";
-import { auth } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 export default async function EventDetailPage({
@@ -10,10 +10,7 @@ export default async function EventDetailPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const requestHeaders = await headers();
-    const session = await auth.api.getSession({
-        headers: requestHeaders,
-    });
+    const session = await getServerSession(authOptions);
     if (!session) return redirect("/unauthorized");
 
     const event = await prisma.event.findUnique({
