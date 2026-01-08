@@ -2,6 +2,7 @@ import { getCurrentProviderCustomerReservations } from "@/actions/reservations";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import ProviderReservationCard from "@/components/provider/provider-reservation-card";
 
 const Page = async () => {
     const session = await getServerSession(authOptions);
@@ -48,41 +49,16 @@ const Page = async () => {
             {customerReservations.length > 0 ? (
                 <div className="grid gap-4 lg:grid-cols-2">
                     {customerReservations.map((reservation) => (
-                        <div key={reservation.id} className="relative flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-indigo-900/30 backdrop-blur">
-                            <div className="flex items-start justify-between gap-4">
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-widest text-white/60">{reservation.service.type}</p>
-                                    <h2 className="mt-1 text-xl font-semibold text-white">{reservation.service.title}</h2>
-                                    <p className="mt-1 text-sm text-white/70">Event: {reservation.event.title}</p>
-                                </div>
-                                <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold capitalize text-white ring-1 ring-white/15">
-                                    {reservation.status.toLowerCase()}
-                                </span>
-                            </div>
-
-                            <div className="grid gap-3 sm:grid-cols-3">
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">
-                                    <p className="text-xs uppercase tracking-wide text-white/60">Customer</p>
-                                    <p className="font-semibold">{reservation.event.customer.username}</p>
-                                </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">
-                                    <p className="text-xs uppercase tracking-wide text-white/60">Date</p>
-                                    <p className="font-semibold">{new Date(reservation.event.date).toLocaleDateString()}</p>
-                                </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">
-                                    <p className="text-xs uppercase tracking-wide text-white/60">Service ID</p>
-                                    <p className="font-semibold">{reservation.service.id}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
-                                <span className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5">
-                                    📍
-                                    <span>Event type: {reservation.event.type}</span>
-                                </span>
-                                
-                            </div>
-                        </div>
+                        <ProviderReservationCard
+                            key={reservation.id}
+                            reservation={{
+                                ...reservation,
+                                event: {
+                                    ...reservation.event,
+                                    date: reservation.event.date.toISOString(),
+                                },
+                            }}
+                        />
                     ))}
                 </div>
             ) : (
