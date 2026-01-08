@@ -1,9 +1,9 @@
 "use client";
 import gsap from "gsap";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
@@ -47,9 +47,10 @@ const LoginPage = () => {
         event.preventDefault();
         setIsSubmitting(true);
 
-        const response = await authClient.signIn.username({
+        const response = await signIn("credentials", {
             username,
             password,
+            redirect: false,
         });
 
         if (response?.error) {
@@ -58,7 +59,8 @@ const LoginPage = () => {
             return;
         }
 
-        const role = response?.data?.user?.role;
+        const session = await getSession();
+        const role = session?.user?.role;
 
         if (role === "PROVIDER") {
             router.push("/provider");

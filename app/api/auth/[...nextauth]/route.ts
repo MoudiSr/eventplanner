@@ -1,5 +1,6 @@
 // app/api/auth/[...nextauth]/route.ts
-import { auth } from "@/lib/auth";
-import { toNextJsHandler } from "better-auth/next-js";
+import { authOptions } from "@/lib/auth";
+import NextAuth from "next-auth";
 
-export const { GET, POST, PUT, PATCH, DELETE } = toNextJsHandler(auth);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

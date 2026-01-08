@@ -29,7 +29,7 @@ export const createEvent = async (title: string, description: string, date: stri
             },
         });
 
-        revalidatePath('/customer');
+        revalidatePath('/customer/');
         return { message: "Event created successfully.", event };
     } catch (error) {
         console.error("Error creating event:", error);
