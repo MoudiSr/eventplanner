@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectLabel } from "@radix-ui/react-select";
 import { createEvent } from "@/actions/events";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 
 const CustomerCreateEvent = () => {
     const [title, setTitle] = useState("");
@@ -14,7 +14,7 @@ const CustomerCreateEvent = () => {
     const [date, setDate] = useState("");
     const [type, setType] = useState("");
 
-    const { data: session } = useSession();
+    const { data: session } = authClient.useSession();
     const pageRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const CustomerCreateEvent = () => {
     }, []);
 
     const handleSubmit = async () => {
-        if (session?.user.role !== "CUSTOMER") {
+        if (session?.user?.role !== "CUSTOMER") {
             alert("You must be logged in as a customer to create an event.");
             return;
         }
@@ -58,7 +58,7 @@ const CustomerCreateEvent = () => {
             return;
         }
 
-        const event = await createEvent(title, description, date, type, "PENDING", String(session?.user.id));
+        const event = await createEvent(title, description, date, type, "PENDING", String(session?.user?.id));
         if ('error' in event) {
             alert(event.error);
         } else {

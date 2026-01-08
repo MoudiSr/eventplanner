@@ -1,10 +1,13 @@
 import { getCurrentProviderCustomerReservations } from "@/actions/reservations";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import Link from "next/link";
 
 const Page = async () => {
-    const session = await getServerSession(authOptions);
+    const requestHeaders = await headers();
+    const session = await auth.api.getSession({
+        headers: requestHeaders,
+    });
     if (!session?.user?.id) {
         return (
             <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-12 text-center text-white shadow-2xl shadow-indigo-900/30 backdrop-blur">
