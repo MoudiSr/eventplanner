@@ -4,13 +4,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-const Page = async ({ params }: { params: { id: string } }) => {
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
+    
     if (!session?.user?.id) {
         redirect("/login");
     }
 
-    const service = await getServiceById(params.id);
+    const service = await getServiceById(id);
     if (!service) {
         redirect("/provider");
     }
